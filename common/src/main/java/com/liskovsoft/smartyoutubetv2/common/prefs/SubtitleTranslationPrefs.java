@@ -32,33 +32,33 @@ public class SubtitleTranslationPrefs {
     }
 
     public boolean isEnabled() {
-        return "true".equals(mPrefs.getProfileData(KEY_ENABLED));
+        return mPrefs.getBoolean(KEY_ENABLED, false);
     }
 
     public void setEnabled(boolean enabled) {
-        mPrefs.setProfileData(KEY_ENABLED, enabled ? "true" : "false");
+        mPrefs.putBoolean(KEY_ENABLED, enabled);
     }
 
     public String getProvider() {
-        String val = mPrefs.getProfileData(KEY_PROVIDER);
+        String val = mPrefs.getString(KEY_PROVIDER, PROVIDER_GEMINI);
         return PROVIDER_OPENAI.equals(val) ? PROVIDER_OPENAI : PROVIDER_GEMINI;
     }
 
     public void setProvider(String provider) {
-        mPrefs.setProfileData(KEY_PROVIDER, PROVIDER_OPENAI.equals(provider) ? PROVIDER_OPENAI : PROVIDER_GEMINI);
+        mPrefs.putString(KEY_PROVIDER, PROVIDER_OPENAI.equals(provider) ? PROVIDER_OPENAI : PROVIDER_GEMINI);
     }
 
     public String getApiKey() {
-        String val = mPrefs.getProfileData(KEY_API_KEY);
+        String val = mPrefs.getString(KEY_API_KEY, "");
         return val != null ? val.trim() : "";
     }
 
     public void setApiKey(String apiKey) {
-        mPrefs.setProfileData(KEY_API_KEY, apiKey != null ? apiKey.trim() : "");
+        mPrefs.putString(KEY_API_KEY, apiKey != null ? apiKey.trim() : "");
     }
 
     public String getRawModel() {
-        String val = mPrefs.getProfileData(KEY_MODEL);
+        String val = mPrefs.getString(KEY_MODEL, "");
         return val != null ? val.trim() : "";
     }
 
@@ -71,11 +71,11 @@ public class SubtitleTranslationPrefs {
     }
 
     public void setModel(String model) {
-        mPrefs.setProfileData(KEY_MODEL, model != null ? model.trim() : "");
+        mPrefs.putString(KEY_MODEL, model != null ? model.trim() : "");
     }
 
     public String getRawEndpoint() {
-        String val = mPrefs.getProfileData(KEY_ENDPOINT);
+        String val = mPrefs.getString(KEY_ENDPOINT, "");
         return val != null ? val.trim() : "";
     }
 
@@ -85,7 +85,7 @@ public class SubtitleTranslationPrefs {
     }
 
     public void setEndpoint(String endpoint) {
-        mPrefs.setProfileData(KEY_ENDPOINT, endpoint != null ? endpoint.trim() : "");
+        mPrefs.putString(KEY_ENDPOINT, endpoint != null ? endpoint.trim() : "");
     }
 
     public boolean isConfigured() {

@@ -1,6 +1,8 @@
 package com.liskovsoft.smartyoutubetv2.common.app.presenters.settings;
 
 import android.content.Context;
+import android.text.TextUtils;
+import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.smartyoutubetv2.common.R;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionCategory;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionItem;
@@ -117,21 +119,32 @@ public class SubtitleSettingsPresenter extends BasePresenter<Void> {
                 providers
         );
 
+        String apiKey = prefs.getApiKey();
+        String apiKeyLabel = getContext().getString(R.string.subtitle_contextual_api_key);
+        if (!TextUtils.isEmpty(apiKey)) {
+            String masked = apiKey.length() > 8
+                    ? apiKey.substring(0, 4) + "..." + apiKey.substring(apiKey.length() - 4)
+                    : "****";
+            apiKeyLabel += " (" + masked + ")";
+        }
+
         settingsPresenter.appendSingleButton(UiOptionItem.from(
-                getContext().getString(R.string.subtitle_contextual_api_key),
-                option -> SimpleEditDialog.showPassword(
+                apiKeyLabel,
+                option -> SimpleEditDialog.show(
                         getContext(),
                         getContext().getString(R.string.subtitle_contextual_api_key),
+                        "AIza... / sk-...",
                         prefs.getApiKey(),
                         newValue -> {
                             prefs.setApiKey(newValue);
+                            MessageHelpers.showMessage(getContext(), R.string.msg_done);
                             return true;
                         }
                 )
         ));
 
         settingsPresenter.appendSingleButton(UiOptionItem.from(
-                getContext().getString(R.string.subtitle_contextual_model),
+                getContext().getString(R.string.subtitle_contextual_model) + " (" + prefs.getEffectiveModel() + ")",
                 option -> SimpleEditDialog.show(
                         getContext(),
                         getContext().getString(R.string.subtitle_contextual_model),
@@ -139,6 +152,7 @@ public class SubtitleSettingsPresenter extends BasePresenter<Void> {
                         prefs.getRawModel(),
                         newValue -> {
                             prefs.setModel(newValue);
+                            MessageHelpers.showMessage(getContext(), R.string.msg_done);
                             return true;
                         }
                 )
