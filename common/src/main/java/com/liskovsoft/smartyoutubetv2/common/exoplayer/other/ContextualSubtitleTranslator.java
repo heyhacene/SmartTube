@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +32,7 @@ public class ContextualSubtitleTranslator {
     private static final String TAG = ContextualSubtitleTranslator.class.getSimpleName();
     private static final int BATCH_SIZE = 35;
     private static final int CONTEXT_WINDOW = 5;
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
     private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
 
     private static final Pattern VTT_INLINE_TAG = Pattern.compile("<[^>]+>");
@@ -48,7 +49,7 @@ public class ContextualSubtitleTranslator {
             return null;
         }
 
-        String content = new String(rawBytes, StandardCharsets.UTF_8);
+        String content = new String(rawBytes, UTF_8);
         String trimmed = content.trim();
         if (trimmed.isEmpty()) {
             return null;
@@ -63,12 +64,12 @@ public class ContextualSubtitleTranslator {
 
         if (trimmed.startsWith("WEBVTT") || trimmed.contains("-->")) {
             String translatedVtt = translateWebVtt(content, targetLang, prefs, client);
-            return translatedVtt != null ? translatedVtt.getBytes(StandardCharsets.UTF_8) : null;
+            return translatedVtt != null ? translatedVtt.getBytes(UTF_8) : null;
         }
 
         if (trimmed.startsWith("<")) {
             String translatedXml = translateXmlSubtitles(content, targetLang, prefs, client);
-            return translatedXml != null ? translatedXml.getBytes(StandardCharsets.UTF_8) : null;
+            return translatedXml != null ? translatedXml.getBytes(UTF_8) : null;
         }
 
         return null;
