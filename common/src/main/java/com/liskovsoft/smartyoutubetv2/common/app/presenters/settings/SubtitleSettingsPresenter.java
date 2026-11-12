@@ -3,12 +3,18 @@ package com.liskovsoft.smartyoutubetv2.common.app.presenters.settings;
 import android.content.Context;
 import com.liskovsoft.smartyoutubetv2.common.R;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionCategory;
+import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionItem;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.UiOptionItem;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.AppDialogPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.base.BasePresenter;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
+import com.liskovsoft.smartyoutubetv2.common.prefs.SubtitleTranslationPrefs;
 import com.liskovsoft.smartyoutubetv2.common.utils.AppDialogUtil;
+import com.liskovsoft.smartyoutubetv2.common.utils.SimpleEditDialog;
 import com.liskovsoft.youtubeapi.service.internal.MediaServiceData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SubtitleSettingsPresenter extends BasePresenter<Void> {
     private final PlayerData mPlayerData;
@@ -32,6 +38,7 @@ public class SubtitleSettingsPresenter extends BasePresenter<Void> {
         appendSubtitleStyleCategory(settingsPresenter);
         appendSubtitleSizeCategory(settingsPresenter);
         appendSubtitlePositionCategory(settingsPresenter);
+        appendContextualTranslationOptions(settingsPresenter);
 
         settingsPresenter.showDialog(getContext().getString(R.string.subtitle_category_title));
     }
@@ -83,5 +90,72 @@ public class SubtitleSettingsPresenter extends BasePresenter<Void> {
         settingsPresenter.appendSingleSwitch(UiOptionItem.from("Unlock more subtitles",
                 option -> MediaServiceData.instance().setMoreSubtitlesUnlocked(option.isSelected()),
                 MediaServiceData.instance().isMoreSubtitlesUnlocked()));
+    }
+
+    private void appendContextualTranslationOptions(AppDialogPresenter settingsPresenter) {
+        SubtitleTranslationPrefs prefs = SubtitleTranslationPrefs.instance(getContext());
+
+        settingsPresenter.appendSingleSwitch(UiOptionItem.from(
+                getContext().getString(R.string.subtitle_contextual_enable),
+                option -> prefs.setEnabled(option.isSelected()),
+                prefs.isEnabled()
+        ));
+
+        List<OptionItem> providers = new ArrayList<>();
+        providers.add(UiOptionItem.from(
+                getContext().getString(R.string.subtitle_contextual_provider_gemini),
+                option -> prefs.setProvider(SubtitleTranslationPrefs.PROVIDER_GEMINI),
+                SubtitleTranslationPrefs.PROVIDER_GEMINI.equals(prefs.getProvider())
+        ));
+        providers.add(UiOptionItem.from(
+                getContext().getString(R.string.subtitle_contextual_provider_openai),
+                option -> prefs.setProvider(SubtitleTranslationPrefs.PROVIDER_OPENAI),
+                SubtitleTranslationPrefs.PROVIDER_OPENAI.equals(prefs.getProvider())
+        ));
+        settingsPresenter.appendRadioCategory(
+                getContext().getString(R.string.subtitle_contextual_provider),
+                providers
+        );
+
+        settingsPresenter.appendSingleButton(UiOptionItem.from(
+                getContext().getString(R.string.subtitle_contextual_api_key),
+                option -> SimpleEditDialog.showPassword(
+                        getContext(),
+                        getContext().getString(R.string.subtitle_contextual_api_key),
+                        prefs.getApiKey(),
+                        newValue -> {
+                            prefs.setApiKey(newValue);
+                            return true;
+                        }
+                )
+        ));
+
+        settingsPresenter.appendSingleButton(UiOptionItem.from(
+                getContext().getString(R.string.subtitle_contextual_model),
+                option -> SimpleEditDialog.show(
+                        getContext(),
+                        getContext().getString(R.string.subtitle_contextual_model),
+                        prefs.getEffectiveModel(),
+                        prefs.getRawModel(),
+                        newValue -> {
+                            prefs.setModel(newValue);
+                            return true;
+                        }
+                )
+        ));
+
+        settingsPresenter.appendSingleButton(UiOptionItem.from(
+                getContext().getString(R.string.subtitle_contextual_endpoint),
+                option -> SimpleEditDialog.show(
+                        getContext(),
+                        getContext().getString(R.string.subtitle_contextual_endpoint),
+                        SubtitleTranslationPrefs.DEFAULT_OPENAI_ENDPOINT,
+                        prefs.getRawEndpoint(),
+                        newValue -> {
+                            prefs.setEndpoint(newValue);
+                            return true;
+                        }
+                )
+        ));
     }
 }

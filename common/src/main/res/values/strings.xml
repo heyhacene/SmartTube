@@ -762,4 +762,11 @@
         <item quantity="one">%s second</item>
         <item quantity="other">%s seconds</item>
     </plurals>
+    <string name="subtitle_contextual_enable">Contextual AI subtitle translation</string>
+    <string name="subtitle_contextual_provider">AI translation provider</string>
+    <string name="subtitle_contextual_provider_gemini">Google Gemini (recommended)</string>
+    <string name="subtitle_contextual_provider_openai">OpenAI-compatible / Ollama</string>
+    <string name="subtitle_contextual_api_key">AI API key</string>
+    <string name="subtitle_contextual_model">AI model</string>
+    <string name="subtitle_contextual_endpoint">Custom API endpoint URL</string>
 </resources>

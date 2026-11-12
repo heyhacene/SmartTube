@@ -109,12 +109,16 @@ android {
 
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
             }
         }
         // Use same key for release and debug for testing
         debug {
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
             }
         }
     }
@@ -160,7 +164,8 @@ android {
     // NOTE: The main goal of prefixing a flavor is to group flavors' folders together
     productFlavors {
         stbeta {
-            applicationId "org.smarttube.beta"
+            applicationId "com.heyhacene.smarttube.subplus"
+            resValue "string", "app_name", "SmartTube Sub+"
             targetSdkVersion project.properties.compileSdkVersion
         }
         ststable {
