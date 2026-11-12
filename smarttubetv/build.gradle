@@ -165,7 +165,6 @@ android {
     productFlavors {
         stbeta {
             applicationId "com.heyhacene.smarttube.subplus"
-            resValue "string", "app_name", "SmartTube Sub+"
             targetSdkVersion project.properties.compileSdkVersion
         }
         ststable {
