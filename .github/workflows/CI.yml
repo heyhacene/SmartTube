@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
       HAS_VT_KEY: ${{ secrets.VIRUS_TOTAL_API_KEY != '' }}
@@ -116,3 +118,20 @@ jobs:
           name: SmartTube_${{ steps.get_version.outputs.VERSION_NAME }}_x86
           path: ./smarttubetv/build/outputs/apk/stbeta/release/*_x86.apk
           if-no-files-found: error
+
+      - name: Prepare Stable Release APK Names
+        run: |
+          mkdir -p release-apks
+          cp ./smarttubetv/build/outputs/apk/stbeta/release/*_arm64-v8a.apk release-apks/SmartTube_SubPlus_arm64-v8a.apk
+          cp ./smarttubetv/build/outputs/apk/stbeta/release/*_armeabi-v7a.apk release-apks/SmartTube_SubPlus_armeabi-v7a.apk
+          cp ./smarttubetv/build/outputs/apk/stbeta/release/*_universal.apk release-apks/SmartTube_SubPlus_universal.apk
+          cp ./smarttubetv/build/outputs/apk/stbeta/release/*_x86.apk release-apks/SmartTube_SubPlus_x86.apk
+
+      - name: Publish Latest Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes || true
+          gh release create latest release-apks/*.apk \
+            --title "SmartTube Sub+ (${{ steps.get_version.outputs.VERSION_NAME }})" \
+            --notes "Automated build with contextual AI subtitle translation."
