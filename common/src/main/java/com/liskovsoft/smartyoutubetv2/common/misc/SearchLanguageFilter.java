@@ -170,8 +170,15 @@ public class SearchLanguageFilter {
             }
         }
 
-        // Reject if another language has a higher score, otherwise keep short/ambiguous titles
-        return targetScore > 0 ? targetScore >= bestOtherScore : bestOtherScore == 0;
+        // When filtering for a specific language, require positive signal unless the title is very short (<= 2 words)
+        if (targetScore > 0) {
+            return targetScore >= bestOtherScore;
+        }
+        if (bestOtherScore > 0) {
+            return false;
+        }
+        String[] words = lower.trim().split("\\s+");
+        return words.length <= 2;
     }
 
     private static boolean containsAny(String s, char... chars) {
