@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * since YouTube's search API does not expose a native language filter.
  */
 public class SearchLanguageFilter {
-    private static final Pattern WORD_PATTERN = Pattern.compile("[\\p{L}']+");
+    private static final Pattern WORD_PATTERN = Pattern.compile("\\p{L}+");
     private static final Map<String, Set<String>> STOPWORDS = new HashMap<>();
 
     static {
@@ -31,7 +31,12 @@ public class SearchLanguageFilter {
                 "comment", "pourquoi", "quand", "mais", "ou", "donc", "vous", "nous", "ils",
                 "elles", "je", "tu", "il", "elle", "on", "ce", "se", "ne", "si", "mon", "ma",
                 "mes", "ton", "son", "sa", "ses", "nos", "vos", "cette", "ces", "tout", "tous",
-                "etre", "avoir", "faire", "plus", "moins", "sans", "chez", "entre"
+                "etre", "avoir", "faire", "plus", "moins", "sans", "chez", "entre",
+                "fr", "vf", "français", "francais", "tuto", "tutoriel", "découverte",
+                "présentation", "avis", "astuce", "astuces", "gratuit", "nouveau", "nouvelle",
+                "nouveautés", "meilleur", "meilleure", "utiliser", "installer", "configurer",
+                "créer", "comprendre", "voici", "faut", "peut", "fait", "très", "bien",
+                "aussi", "même", "encore", "jamais", "toujours", "maintenant"
         )));
         STOPWORDS.put("en", new HashSet<>(Arrays.asList(
                 "the", "and", "for", "with", "that", "this", "from", "you", "are", "to", "in",

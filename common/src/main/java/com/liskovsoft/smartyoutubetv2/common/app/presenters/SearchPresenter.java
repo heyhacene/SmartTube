@@ -48,6 +48,8 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
     private int mFeatureOptions;
     private int mSortingOptions;
     private Video mCurrentVideo;
+    private int mAutoFetchCount;
+    private int mFilteredCount;
 
     private SearchPresenter(Context context) {
         super(context);
@@ -188,6 +190,10 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
         String searchCountry = subPrefs.getSearchCountry();
         String prevCountry = LocaleManager.instance().getCountry();
 
+        final VideoGroup[] primaryGroup = new VideoGroup[1];
+        mAutoFetchCount = 0;
+        mFilteredCount = 0;
+
         mLoadAction = contentService.getSearchObserve(searchText,
                 mUploadDateOptions | mDurationOptions | mTypeOptions | mFeatureOptions | mSortingOptions)
                 .doOnSubscribe(d -> {
@@ -206,6 +212,10 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
                             for (MediaGroup mediaGroup : mediaGroups) {
                                 VideoGroup group = VideoGroup.from(mediaGroup);
                                 SearchLanguageFilter.filter(group, searchLang);
+                                if (primaryGroup[0] == null && mediaGroup.getNextPageKey() != null) {
+                                    primaryGroup[0] = group;
+                                }
+                                mFilteredCount += group.getSize();
                                 startPlayFirstVideo(group);
                                 getView().updateSearch(group);
                                 mBrowseProcessor.process(group);
@@ -220,6 +230,13 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
                         () -> {
                             if (getView() != null) {
                                 getView().showProgressBar(false);
+                            }
+                            if (!TextUtils.isEmpty(searchLang)
+                                    && mFilteredCount < 8
+                                    && primaryGroup[0] != null
+                                    && mAutoFetchCount < 2) {
+                                mAutoFetchCount++;
+                                continueGroup(primaryGroup[0]);
                             }
                         }
                 );
@@ -248,6 +265,8 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
         String searchCountry = subPrefs.getSearchCountry();
         String prevCountry = LocaleManager.instance().getCountry();
 
+        final VideoGroup[] continuedGroup = new VideoGroup[1];
+
         mScrollAction = contentService.continueGroupObserve(mediaGroup)
                 .doOnSubscribe(d -> {
                     if (!TextUtils.isEmpty(searchCountry)) {
@@ -263,6 +282,8 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
                         continueMediaGroup -> {
                             VideoGroup newGroup = VideoGroup.from(group, continueMediaGroup);
                             SearchLanguageFilter.filter(newGroup, searchLang);
+                            mFilteredCount += newGroup.getSize();
+                            continuedGroup[0] = newGroup;
                             getView().updateSearch(newGroup);
                             mBrowseProcessor.process(newGroup);
                         },
@@ -275,6 +296,16 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
                         () -> {
                             if (getView() != null) {
                                 getView().showProgressBar(false);
+                            }
+                            if (!TextUtils.isEmpty(searchLang)
+                                    && mFilteredCount < 8
+                                    && continuedGroup[0] != null
+                                    && continuedGroup[0].getMediaGroup() != null
+                                    && !TextUtils.isEmpty(continuedGroup[0].getMediaGroup().getNextPageKey())
+                                    && mAutoFetchCount < 2) {
+                                mAutoFetchCount++;
+                                RxHelper.disposeActions(mScrollAction);
+                                continueGroup(continuedGroup[0]);
                             }
                         }
                 );
