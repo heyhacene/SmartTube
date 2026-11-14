@@ -27,6 +27,7 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.MainUIData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerTweaksData;
+import com.liskovsoft.smartyoutubetv2.common.prefs.SubtitleTranslationPrefs;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.youtubeapi.service.internal.MediaServiceData;
 import com.r0adkll.slidr.Slidr;
@@ -70,6 +71,8 @@ public class MotherActivity extends FragmentActivity {
         //    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         //}
         super.onCreate(savedInstanceState);
+
+        SubtitleTranslationPrefs.instance(this).applyYouTubeApiLanguage();
 
         Log.d(TAG, "Starting %s...", this.getClass().getSimpleName());
 

@@ -3,6 +3,8 @@ package com.liskovsoft.smartyoutubetv2.common.prefs;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.liskovsoft.googlecommon.common.locale.LocaleManager;
+
 public class SubtitleTranslationPrefs {
     public static final String PROVIDER_GEMINI = "gemini";
     public static final String PROVIDER_OPENAI = "openai";
@@ -16,6 +18,7 @@ public class SubtitleTranslationPrefs {
     private static final String KEY_API_KEY = "sub_ctx_api_key";
     private static final String KEY_MODEL = "sub_ctx_model";
     private static final String KEY_ENDPOINT = "sub_ctx_endpoint";
+    private static final String KEY_FORCE_EN_YT_API = "sub_ctx_force_en_yt_api";
 
     private static SubtitleTranslationPrefs sInstance;
     private final AppPrefs mPrefs;
@@ -97,5 +100,21 @@ public class SubtitleTranslationPrefs {
         }
         // Allow local OpenAI-compatible servers (e.g. Ollama / LM Studio) without an API key
         return PROVIDER_OPENAI.equals(getProvider()) && !TextUtils.isEmpty(getRawEndpoint());
+    }
+
+    public boolean isForceEnglishYouTubeApi() {
+        return mPrefs.getBoolean(KEY_FORCE_EN_YT_API, false);
+    }
+
+    public void setForceEnglishYouTubeApi(boolean enabled) {
+        mPrefs.putBoolean(KEY_FORCE_EN_YT_API, enabled);
+    }
+
+    public void applyYouTubeApiLanguage() {
+        if (isForceEnglishYouTubeApi()) {
+            LocaleManager.instance().setLanguage("en");
+        } else {
+            LocaleManager.unhold();
+        }
     }
 }

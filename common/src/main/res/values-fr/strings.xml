@@ -769,4 +769,5 @@
     <string name="subtitle_contextual_api_key">Clé API IA</string>
     <string name="subtitle_contextual_model">Modèle IA</string>
     <string name="subtitle_contextual_endpoint">URL d\'API personnalisée</string>
+    <string name="prevent_video_title_translation">Empêcher la traduction des titres vidéo (API YouTube en anglais)</string>
 </resources>

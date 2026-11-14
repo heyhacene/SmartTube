@@ -10,6 +10,8 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionItem;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.UiOptionItem;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.AppDialogPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.base.BasePresenter;
+import com.liskovsoft.smartyoutubetv2.common.prefs.SubtitleTranslationPrefs;
+import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -38,6 +40,18 @@ public class LanguageSettingsPresenter extends BasePresenter<Void> {
 
     public void show() {
         AppDialogPresenter settingsPresenter = AppDialogPresenter.instance(getContext());
+
+        SubtitleTranslationPrefs prefs = SubtitleTranslationPrefs.instance(getContext());
+        settingsPresenter.appendSingleSwitch(UiOptionItem.from(
+                getContext().getString(R.string.prevent_video_title_translation),
+                option -> {
+                    prefs.setForceEnglishYouTubeApi(option.isSelected());
+                    prefs.applyYouTubeApiLanguage();
+                    YouTubeServiceManager.instance().invalidateCache();
+                    mRestartApp = true;
+                },
+                prefs.isForceEnglishYouTubeApi()
+        ));
 
         appendLanguageCategory(settingsPresenter);
         appendCountryCategory(settingsPresenter);

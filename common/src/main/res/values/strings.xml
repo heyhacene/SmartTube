@@ -769,4 +769,5 @@
     <string name="subtitle_contextual_api_key">AI API key</string>
     <string name="subtitle_contextual_model">AI model</string>
     <string name="subtitle_contextual_endpoint">Custom API endpoint URL</string>
+    <string name="prevent_video_title_translation">Prevent video title translation (YouTube API in English)</string>
 </resources>
