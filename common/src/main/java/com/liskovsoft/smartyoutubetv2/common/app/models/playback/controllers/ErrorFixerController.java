@@ -409,6 +409,7 @@ public class ErrorFixerController extends BasePlayerController implements OnLong
             mVideoLoaderController.reloadVideo();
         } else if (Helpers.containsAny(message, "is not defined")) {
             YouTubeServiceManager.instance().invalidateCache();
+            com.liskovsoft.smartyoutubetv2.common.prefs.SubtitleTranslationPrefs.instance(getContext()).applyYouTubeApiLanguage();
             mVideoLoaderController.reloadVideo();
         } else {
             Log.e(TAG, "Probably no internet connection");

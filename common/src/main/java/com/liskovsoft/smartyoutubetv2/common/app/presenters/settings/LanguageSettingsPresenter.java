@@ -46,8 +46,8 @@ public class LanguageSettingsPresenter extends BasePresenter<Void> {
                 getContext().getString(R.string.prevent_video_title_translation),
                 option -> {
                     prefs.setForceEnglishYouTubeApi(option.isSelected());
-                    prefs.applyYouTubeApiLanguage();
                     YouTubeServiceManager.instance().invalidateCache();
+                    prefs.applyYouTubeApiLanguage();
                     mRestartApp = true;
                 },
                 prefs.isForceEnglishYouTubeApi()

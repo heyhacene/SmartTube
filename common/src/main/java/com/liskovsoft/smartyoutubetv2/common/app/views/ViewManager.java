@@ -301,6 +301,7 @@ public class ViewManager {
 
     public void clearCaches() {
         YouTubeServiceManager.instance().invalidateCache();
+        com.liskovsoft.smartyoutubetv2.common.prefs.SubtitleTranslationPrefs.instance(mContext).applyYouTubeApiLanguage();
         // Note, also deletes cached flags (internal cache)
         // Note, deletes cached apks (external cache)
         FileHelpers.deleteCache(mContext);

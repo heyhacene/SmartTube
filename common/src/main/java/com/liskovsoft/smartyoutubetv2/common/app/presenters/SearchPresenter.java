@@ -2,6 +2,8 @@ package com.liskovsoft.smartyoutubetv2.common.app.presenters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.TextUtils;
+import com.liskovsoft.googlecommon.common.locale.LocaleManager;
 import com.liskovsoft.mediaserviceinterfaces.ContentService;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
 import com.liskovsoft.mediaserviceinterfaces.data.SearchOptions;
@@ -180,10 +182,24 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
 
         getView().clearSearch();
 
-        String searchLang = SubtitleTranslationPrefs.instance(getContext()).getSearchLanguage();
+        SubtitleTranslationPrefs subPrefs = SubtitleTranslationPrefs.instance(getContext());
+        subPrefs.applyYouTubeApiLanguage();
+        String searchLang = subPrefs.getSearchLanguage();
+        String searchCountry = subPrefs.getSearchCountry();
+        String prevCountry = LocaleManager.instance().getCountry();
 
         mLoadAction = contentService.getSearchObserve(searchText,
                 mUploadDateOptions | mDurationOptions | mTypeOptions | mFeatureOptions | mSortingOptions)
+                .doOnSubscribe(d -> {
+                    if (!TextUtils.isEmpty(searchCountry)) {
+                        LocaleManager.instance().setCountry(searchCountry);
+                    }
+                })
+                .doFinally(() -> {
+                    if (!TextUtils.isEmpty(searchCountry)) {
+                        LocaleManager.instance().setCountry(prevCountry);
+                    }
+                })
                 .subscribe(
                         mediaGroups -> {
                             Log.d(TAG, "Receiving results for '%s'", searchText);
@@ -226,11 +242,27 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
 
         ContentService contentService = getContentService();
 
+        SubtitleTranslationPrefs subPrefs = SubtitleTranslationPrefs.instance(getContext());
+        subPrefs.applyYouTubeApiLanguage();
+        String searchLang = subPrefs.getSearchLanguage();
+        String searchCountry = subPrefs.getSearchCountry();
+        String prevCountry = LocaleManager.instance().getCountry();
+
         mScrollAction = contentService.continueGroupObserve(mediaGroup)
+                .doOnSubscribe(d -> {
+                    if (!TextUtils.isEmpty(searchCountry)) {
+                        LocaleManager.instance().setCountry(searchCountry);
+                    }
+                })
+                .doFinally(() -> {
+                    if (!TextUtils.isEmpty(searchCountry)) {
+                        LocaleManager.instance().setCountry(prevCountry);
+                    }
+                })
                 .subscribe(
                         continueMediaGroup -> {
                             VideoGroup newGroup = VideoGroup.from(group, continueMediaGroup);
-                            SearchLanguageFilter.filter(newGroup, SubtitleTranslationPrefs.instance(getContext()).getSearchLanguage());
+                            SearchLanguageFilter.filter(newGroup, searchLang);
                             getView().updateSearch(newGroup);
                             mBrowseProcessor.process(newGroup);
                         },

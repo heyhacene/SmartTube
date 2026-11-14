@@ -170,15 +170,11 @@ public class SearchLanguageFilter {
             }
         }
 
-        // When filtering for a specific language, require positive signal unless the title is very short (<= 2 words)
+        // When filtering for a specific language, require a strict positive language signal
         if (targetScore > 0) {
-            return targetScore >= bestOtherScore;
+            return targetScore > bestOtherScore;
         }
-        if (bestOtherScore > 0) {
-            return false;
-        }
-        String[] words = lower.trim().split("\\s+");
-        return words.length <= 2;
+        return false;
     }
 
     private static boolean containsAny(String s, char... chars) {

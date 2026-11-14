@@ -129,6 +129,23 @@ public class SubtitleTranslationPrefs {
         mPrefs.putString(KEY_SEARCH_LANG, langCode != null ? langCode.trim() : "");
     }
 
+    public String getSearchCountry() {
+        switch (getSearchLanguage()) {
+            case "fr": return "FR";
+            case "en": return "US";
+            case "es": return "ES";
+            case "de": return "DE";
+            case "it": return "IT";
+            case "pt": return "BR";
+            case "ja": return "JP";
+            case "ko": return "KR";
+            case "ar": return "SA";
+            case "ru": return "RU";
+            case "zh": return "TW";
+            default: return "";
+        }
+    }
+
     public boolean isAudioTrackButtonMigrated() {
         return mPrefs.getBoolean(KEY_AUDIO_BTN_MIGRATED, false);
     }
