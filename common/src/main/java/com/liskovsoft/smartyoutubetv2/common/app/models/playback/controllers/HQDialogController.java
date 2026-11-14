@@ -52,6 +52,12 @@ public class HQDialogController extends BasePlayerController {
 
         fitVideoIntoDialog();
 
+        OptionCategory audioLangCategory = AppDialogUtil.createAudioLanguageCategory(getContext(),
+                () -> getPlayer().restartEngine());
+        if (audioLangCategory != null) {
+            mAppDialogPresenter.appendCategory(audioLangCategory);
+        }
+
         List<FormatItem> audioFormats = getPlayer().getAudioFormats();
         String audioFormatsTitle = getContext().getString(R.string.title_audio_formats);
 
@@ -59,7 +65,7 @@ public class HQDialogController extends BasePlayerController {
                 audioFormatsTitle,
                 UiOptionItem.from(audioFormats, this::selectFormatOption, getContext().getString(R.string.option_disabled)));
 
-        mAppDialogPresenter.showDialog(audioFormatsTitle, this::onDialogHide);
+        mAppDialogPresenter.showDialog(getContext().getString(R.string.action_audio_track), this::onDialogHide);
     }
 
     private void onHighQualityClicked() {
