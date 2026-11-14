@@ -2,8 +2,6 @@ package com.liskovsoft.smartyoutubetv2.common.app.presenters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.text.TextUtils;
-import com.liskovsoft.googlecommon.common.locale.LocaleManager;
 import com.liskovsoft.mediaserviceinterfaces.ContentService;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
 import com.liskovsoft.mediaserviceinterfaces.data.SearchOptions;
@@ -182,17 +180,10 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
 
         getView().clearSearch();
 
-        SubtitleTranslationPrefs subPrefs = SubtitleTranslationPrefs.instance(getContext());
-        String searchLang = subPrefs.getSearchLanguage();
+        String searchLang = SubtitleTranslationPrefs.instance(getContext()).getSearchLanguage();
 
         mLoadAction = contentService.getSearchObserve(searchText,
                 mUploadDateOptions | mDurationOptions | mTypeOptions | mFeatureOptions | mSortingOptions)
-                .doOnSubscribe(d -> {
-                    if (!TextUtils.isEmpty(searchLang)) {
-                        LocaleManager.instance().setLanguage(searchLang);
-                    }
-                })
-                .doFinally(subPrefs::applyYouTubeApiLanguage)
                 .subscribe(
                         mediaGroups -> {
                             Log.d(TAG, "Receiving results for '%s'", searchText);
