@@ -72,7 +72,12 @@ public class MotherActivity extends FragmentActivity {
         //}
         super.onCreate(savedInstanceState);
 
-        SubtitleTranslationPrefs.instance(this).applyYouTubeApiLanguage();
+        SubtitleTranslationPrefs subPrefs = SubtitleTranslationPrefs.instance(this);
+        subPrefs.applyYouTubeApiLanguage();
+        if (!subPrefs.isAudioTrackButtonMigrated()) {
+            PlayerTweaksData.instance(this).setPlayerButtonEnabled(PlayerTweaksData.PLAYER_BUTTON_AUDIO_TRACK);
+            subPrefs.setAudioTrackButtonMigrated(true);
+        }
 
         Log.d(TAG, "Starting %s...", this.getClass().getSimpleName());
 

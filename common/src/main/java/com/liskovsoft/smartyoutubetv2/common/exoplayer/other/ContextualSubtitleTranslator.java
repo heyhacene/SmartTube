@@ -30,7 +30,8 @@ import okhttp3.Response;
  */
 public class ContextualSubtitleTranslator {
     private static final String TAG = ContextualSubtitleTranslator.class.getSimpleName();
-    private static final int BATCH_SIZE = 35;
+    private static final int BATCH_SIZE = 120;
+    private static final int MAX_BATCHES = 8;
     private static final int CONTEXT_WINDOW = 5;
     private static final Charset UTF_8 = Charset.forName("UTF-8");
     private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
@@ -57,9 +58,9 @@ public class ContextualSubtitleTranslator {
 
         OkHttpClient client = OkHttpManager.instance().getClient()
                 .newBuilder()
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(45, TimeUnit.SECONDS)
-                .writeTimeout(15, TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(25, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
                 .build();
 
         if (trimmed.startsWith("WEBVTT") || trimmed.contains("-->")) {
@@ -191,8 +192,15 @@ public class ContextualSubtitleTranslator {
     private static List<String> translateCueList(List<String> cues, String targetLang,
                                                  SubtitleTranslationPrefs prefs, OkHttpClient client) {
         List<String> result = new ArrayList<>(cues.size());
+        int batchCount = 0;
 
         for (int start = 0; start < cues.size(); start += BATCH_SIZE) {
+            if (batchCount >= MAX_BATCHES) {
+                Log.w(TAG, "Reached max contextual translation batches, keeping remaining cues");
+                result.addAll(cues.subList(start, cues.size()));
+                break;
+            }
+            batchCount++;
             int end = Math.min(start + BATCH_SIZE, cues.size());
             List<String> batch = cues.subList(start, end);
 

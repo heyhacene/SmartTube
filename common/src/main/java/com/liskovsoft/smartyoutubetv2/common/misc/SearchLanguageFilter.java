@@ -26,16 +26,20 @@ public class SearchLanguageFilter {
 
     static {
         STOPWORDS.put("fr", new HashSet<>(Arrays.asList(
-                "le", "la", "les", "des", "une", "est", "sont", "pour", "dans", "avec",
-                "sur", "pas", "qui", "que", "quoi", "comment", "pourquoi", "quand",
-                "mais", "ou", "donc", "vous", "nous", "ils", "elles", "mon", "ton",
-                "son", "cette", "ces", "tout", "tous", "aux", "du", "au", "etre", "avoir"
+                "le", "la", "les", "des", "un", "une", "de", "du", "au", "aux", "et", "en",
+                "est", "sont", "pour", "dans", "avec", "sur", "pas", "qui", "que", "quoi",
+                "comment", "pourquoi", "quand", "mais", "ou", "donc", "vous", "nous", "ils",
+                "elles", "je", "tu", "il", "elle", "on", "ce", "se", "ne", "si", "mon", "ma",
+                "mes", "ton", "son", "sa", "ses", "nos", "vos", "cette", "ces", "tout", "tous",
+                "etre", "avoir", "faire", "plus", "moins", "sans", "chez", "entre"
         )));
         STOPWORDS.put("en", new HashSet<>(Arrays.asList(
-                "the", "and", "for", "with", "that", "this", "from", "you", "are",
-                "was", "were", "what", "when", "where", "why", "how", "who", "which",
-                "have", "has", "had", "not", "but", "they", "their", "your", "about",
-                "into", "over", "after", "best", "new", "make", "like"
+                "the", "and", "for", "with", "that", "this", "from", "you", "are", "to", "in",
+                "of", "on", "is", "it", "my", "we", "all", "no", "so", "do", "if", "up", "out",
+                "at", "by", "as", "or", "an", "be", "can", "will", "just", "was", "were",
+                "what", "when", "where", "why", "how", "who", "which", "have", "has", "had",
+                "not", "but", "they", "their", "your", "about", "into", "over", "after",
+                "best", "new", "make", "like", "your", "here", "there"
         )));
         STOPWORDS.put("es", new HashSet<>(Arrays.asList(
                 "el", "los", "las", "una", "para", "con", "por", "como", "que",
@@ -166,8 +170,8 @@ public class SearchLanguageFilter {
             }
         }
 
-        // Keep ambiguous/short titles (no clear signal), reject only when another language clearly wins
-        return targetScore > 0 ? targetScore >= bestOtherScore : bestOtherScore < 2;
+        // Reject if another language has a higher score, otherwise keep short/ambiguous titles
+        return targetScore > 0 ? targetScore >= bestOtherScore : bestOtherScore == 0;
     }
 
     private static boolean containsAny(String s, char... chars) {

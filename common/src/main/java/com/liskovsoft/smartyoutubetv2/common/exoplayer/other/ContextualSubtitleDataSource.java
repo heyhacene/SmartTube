@@ -49,7 +49,11 @@ public class ContextualSubtitleDataSource implements DataSource {
 
         @Override
         public DataSource createDataSource() {
-            return new ContextualSubtitleDataSource(mContext, mDelegateFactory.createDataSource());
+            DataSource delegate = mDelegateFactory.createDataSource();
+            if (!SubtitleTranslationPrefs.instance(mContext).isConfigured()) {
+                return delegate;
+            }
+            return new ContextualSubtitleDataSource(mContext, delegate);
         }
     }
 

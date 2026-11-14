@@ -20,6 +20,7 @@ public class SubtitleTranslationPrefs {
     private static final String KEY_ENDPOINT = "sub_ctx_endpoint";
     private static final String KEY_FORCE_EN_YT_API = "sub_ctx_force_en_yt_api";
     private static final String KEY_SEARCH_LANG = "sub_ctx_search_lang";
+    private static final String KEY_AUDIO_BTN_MIGRATED = "sub_ctx_audio_btn_v1";
 
     private static SubtitleTranslationPrefs sInstance;
     private final AppPrefs mPrefs;
@@ -126,5 +127,13 @@ public class SubtitleTranslationPrefs {
 
     public void setSearchLanguage(String langCode) {
         mPrefs.putString(KEY_SEARCH_LANG, langCode != null ? langCode.trim() : "");
+    }
+
+    public boolean isAudioTrackButtonMigrated() {
+        return mPrefs.getBoolean(KEY_AUDIO_BTN_MIGRATED, false);
+    }
+
+    public void setAudioTrackButtonMigrated(boolean migrated) {
+        mPrefs.putBoolean(KEY_AUDIO_BTN_MIGRATED, migrated);
     }
 }
