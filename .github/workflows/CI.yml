@@ -31,7 +31,11 @@ jobs:
         id: get_version
         run: |
           # Keep the original code to make the nightly and original builds interchangeable
+          BASE_CODE=$(grep "versionCode " smarttubetv/build.gradle | head -n 1 | awk '{print $2}')
+          NEW_CODE=$((BASE_CODE * 1000 + ${{ github.run_number }}))
+          sed -i "s/versionCode .*/versionCode ${NEW_CODE}/" smarttubetv/build.gradle
           sed -i "s/versionName \"\(.*\)\"/versionName \"\1-nightly-${{ github.run_number }}\"/" smarttubetv/build.gradle
+          echo "VERSION_CODE=${NEW_CODE}" >> $GITHUB_OUTPUT
           echo "VERSION_NAME=$(grep "versionName" smarttubetv/build.gradle | head -n 1 | awk -F'"' '{print $2}')" >> $GITHUB_OUTPUT
 
       - name: Configure Build Signing
@@ -126,12 +130,25 @@ jobs:
           cp ./smarttubetv/build/outputs/apk/stbeta/release/*_armeabi-v7a.apk release-apks/SmartTube_SubPlus_armeabi-v7a.apk
           cp ./smarttubetv/build/outputs/apk/stbeta/release/*_universal.apk release-apks/SmartTube_SubPlus_universal.apk
           cp ./smarttubetv/build/outputs/apk/stbeta/release/*_x86.apk release-apks/SmartTube_SubPlus_x86.apk
+          cat <<EOF > release-apks/smarttube_subplus.json
+          {
+            "package": {
+              "downloadUrl": "https://github.com/heyhacene/SmartTube/releases/download/latest/SmartTube_SubPlus_universal.apk"
+            },
+            "${{ steps.get_version.outputs.VERSION_NAME }}": {
+              "versionCode": ${{ steps.get_version.outputs.VERSION_CODE }},
+              "changelog": [
+                "SmartTube Sub+ build #${{ github.run_number }} (heyhacene/SmartTube)"
+              ]
+            }
+          }
+          EOF
 
       - name: Publish Latest Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete latest --yes || true
-          gh release create latest release-apks/*.apk \
+          gh release create latest release-apks/* \
             --title "SmartTube Sub+ (${{ steps.get_version.outputs.VERSION_NAME }})" \
             --notes "Automated build with contextual AI subtitle translation."
