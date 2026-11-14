@@ -40,7 +40,26 @@ public class HQDialogController extends BasePlayerController {
     public void onButtonClicked(int buttonId, int buttonState) {
         if (buttonId == R.id.lb_control_high_quality) {
             onHighQualityClicked();
+        } else if (buttonId == R.id.action_audio_track) {
+            onAudioTrackClicked();
         }
+    }
+
+    private void onAudioTrackClicked() {
+        if (getPlayer() == null) {
+            return;
+        }
+
+        fitVideoIntoDialog();
+
+        List<FormatItem> audioFormats = getPlayer().getAudioFormats();
+        String audioFormatsTitle = getContext().getString(R.string.title_audio_formats);
+
+        mAppDialogPresenter.appendRadioCategory(
+                audioFormatsTitle,
+                UiOptionItem.from(audioFormats, this::selectFormatOption, getContext().getString(R.string.option_disabled)));
+
+        mAppDialogPresenter.showDialog(audioFormatsTitle, this::onDialogHide);
     }
 
     private void onHighQualityClicked() {

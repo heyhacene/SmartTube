@@ -19,6 +19,7 @@ public class SubtitleTranslationPrefs {
     private static final String KEY_MODEL = "sub_ctx_model";
     private static final String KEY_ENDPOINT = "sub_ctx_endpoint";
     private static final String KEY_FORCE_EN_YT_API = "sub_ctx_force_en_yt_api";
+    private static final String KEY_SEARCH_LANG = "sub_ctx_search_lang";
 
     private static SubtitleTranslationPrefs sInstance;
     private final AppPrefs mPrefs;
@@ -116,5 +117,14 @@ public class SubtitleTranslationPrefs {
         } else {
             LocaleManager.unhold();
         }
+    }
+
+    public String getSearchLanguage() {
+        String val = mPrefs.getString(KEY_SEARCH_LANG, "");
+        return val != null ? val.trim() : "";
+    }
+
+    public void setSearchLanguage(String langCode) {
+        mPrefs.putString(KEY_SEARCH_LANG, langCode != null ? langCode.trim() : "");
     }
 }

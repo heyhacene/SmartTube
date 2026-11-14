@@ -770,4 +770,7 @@
     <string name="subtitle_contextual_model">Modèle IA</string>
     <string name="subtitle_contextual_endpoint">URL d\'API personnalisée</string>
     <string name="prevent_video_title_translation">Empêcher la traduction des titres vidéo (API YouTube en anglais)</string>
+    <string name="action_audio_track">Piste audio / Doublage</string>
+    <string name="search_filter_language">Langue de recherche</string>
+    <string name="search_language_all">Toutes les langues</string>
 </resources>

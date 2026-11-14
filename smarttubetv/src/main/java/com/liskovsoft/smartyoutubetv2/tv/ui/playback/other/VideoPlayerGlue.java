@@ -28,6 +28,7 @@ import com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.playerglue.tweaks.MaxCo
 import com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.playerglue.tweaks.PlaybackTransportRowPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.widget.OnActionLongClickedListener;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.AFRAction;
+import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.AudioTrackAction;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.ActionHelpers;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.ChannelAction;
 import com.liskovsoft.smartyoutubetv2.tv.ui.playback.actions.ChatAction;
@@ -134,6 +135,7 @@ public class VideoPlayerGlue extends MaxControlsVideoPlayerGlue<PlayerAdapter> i
         putAction(new RotateAction(context));
         putAction(new FlipAction(context));
         putAction(new SoundOffAction(context));
+        putAction(new AudioTrackAction(context));
     }
 
     @Override
@@ -218,6 +220,9 @@ public class VideoPlayerGlue extends MaxControlsVideoPlayerGlue<PlayerAdapter> i
         }
         if (mPlayerTweaksData.isPlayerButtonEnabled(PlayerTweaksData.PLAYER_BUTTON_SUBTITLES)) {
             adapter.add(mActions.get(R.id.lb_control_closed_captioning));
+        }
+        if (mPlayerTweaksData.isPlayerButtonEnabled(PlayerTweaksData.PLAYER_BUTTON_AUDIO_TRACK)) {
+            adapter.add(mActions.get(R.id.action_audio_track));
         }
         if (mPlayerTweaksData.isPlayerButtonEnabled(PlayerTweaksData.PLAYER_BUTTON_ADD_TO_PLAYLIST)) {
             adapter.add(mActions.get(R.id.action_playlist_add));

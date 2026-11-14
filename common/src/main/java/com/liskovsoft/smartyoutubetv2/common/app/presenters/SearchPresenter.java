@@ -21,7 +21,9 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.interfaces.VideoGrou
 import com.liskovsoft.smartyoutubetv2.common.app.views.SearchView;
 import com.liskovsoft.smartyoutubetv2.common.misc.BrowseProcessorManager;
 import com.liskovsoft.smartyoutubetv2.common.misc.MediaServiceManager;
+import com.liskovsoft.smartyoutubetv2.common.misc.SearchLanguageFilter;
 import com.liskovsoft.smartyoutubetv2.common.prefs.AccountsData;
+import com.liskovsoft.smartyoutubetv2.common.prefs.SubtitleTranslationPrefs;
 import com.liskovsoft.smartyoutubetv2.common.utils.AppDialogUtil;
 import io.reactivex.disposables.Disposable;
 
@@ -185,6 +187,7 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
                             Log.d(TAG, "Receiving results for '%s'", searchText);
                             for (MediaGroup mediaGroup : mediaGroups) {
                                 VideoGroup group = VideoGroup.from(mediaGroup);
+                                SearchLanguageFilter.filter(group, SubtitleTranslationPrefs.instance(getContext()).getSearchLanguage());
                                 startPlayFirstVideo(group);
                                 getView().updateSearch(group);
                                 mBrowseProcessor.process(group);
@@ -225,6 +228,7 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
                 .subscribe(
                         continueMediaGroup -> {
                             VideoGroup newGroup = VideoGroup.from(group, continueMediaGroup);
+                            SearchLanguageFilter.filter(newGroup, SubtitleTranslationPrefs.instance(getContext()).getSearchLanguage());
                             getView().updateSearch(newGroup);
                             mBrowseProcessor.process(newGroup);
                         },
@@ -325,8 +329,41 @@ public class SearchPresenter extends BasePresenter<SearchView> implements VideoG
         appendFilterByTypeCategory(settingsPresenter);
         appendFilterByFeatureCategory(settingsPresenter);
         appendSortByCategory(settingsPresenter);
+        appendFilterByLanguageCategory(settingsPresenter);
 
         settingsPresenter.showDialog(getContext().getString(R.string.settings_search));
+    }
+
+    private void appendFilterByLanguageCategory(AppDialogPresenter settingsPresenter) {
+        SubtitleTranslationPrefs prefs = SubtitleTranslationPrefs.instance(getContext());
+        String currentLang = prefs.getSearchLanguage();
+        List<OptionItem> options = new ArrayList<>();
+
+        String[][] langs = new String[][] {
+                {getContext().getString(R.string.search_language_all), ""},
+                {"Français", "fr"},
+                {"English", "en"},
+                {"Español", "es"},
+                {"Deutsch", "de"},
+                {"Italiano", "it"},
+                {"Português", "pt"},
+                {"العربية", "ar"},
+                {"日本語", "ja"},
+                {"한국어", "ko"},
+                {"中文", "zh"},
+                {"Русский", "ru"}
+        };
+
+        for (String[] pair : langs) {
+            options.add(UiOptionItem.from(pair[0],
+                    optionItem -> {
+                        prefs.setSearchLanguage(pair[1]);
+                        loadSearchResult();
+                    },
+                    currentLang.equals(pair[1])));
+        }
+
+        settingsPresenter.appendRadioCategory(getContext().getString(R.string.search_filter_language), options);
     }
 
     private void appendFilterByDateCategory(AppDialogPresenter settingsPresenter) {
