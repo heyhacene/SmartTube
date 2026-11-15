@@ -105,6 +105,7 @@ public class PlayerTweaksData implements ProfileChangeListener {
     private boolean mIsQuickSkipShortsAltEnabled;
     private boolean mIsQuickSkipVideosEnabled;
     private boolean mIsQuickSkipVideosAltEnabled;
+    private boolean mIsQuickSkipChaptersEnabled;
     private boolean mIsOculusQuestFixEnabled;
     private boolean mIsAudioFocusEnabled;
     private boolean mIsNetworkErrorFixingDisabled;
@@ -625,9 +626,20 @@ public class PlayerTweaksData implements ProfileChangeListener {
         persistData();
     }
 
+    public boolean isQuickSkipChaptersEnabled() {
+        return mIsQuickSkipChaptersEnabled;
+    }
+
+    public void setQuickSkipChaptersEnabled(boolean enable) {
+        resetDpadUpDownSettings();
+        mIsQuickSkipChaptersEnabled = enable;
+        persistData();
+    }
+
     private void resetQuickSkipVideosSettings() {
         mIsQuickSkipVideosEnabled = false;
         mIsQuickSkipVideosAltEnabled = false;
+        mIsQuickSkipChaptersEnabled = false;
     }
 
     public void resetDpadLeftRightSettings() {
@@ -639,6 +651,7 @@ public class PlayerTweaksData implements ProfileChangeListener {
     public void resetDpadUpDownSettings() {
         mIsQuickSkipShortsAltEnabled = false;
         mIsQuickSkipVideosAltEnabled = false;
+        mIsQuickSkipChaptersEnabled = false;
         persistData();
     }
 
@@ -777,6 +790,7 @@ public class PlayerTweaksData implements ProfileChangeListener {
         mIsQueueRespectsPlaybackMode = Helpers.parseBoolean(split, 60, false);
         //mIsSabrLiveEnabled = Helpers.parseBoolean(split, 61, false);
         mIsLiveEdgeEnabled = Helpers.parseBoolean(split, 62, false);
+        mIsQuickSkipChaptersEnabled = Helpers.parseBoolean(split, 63, false);
 
         updateDefaultValues();
     }
@@ -805,7 +819,7 @@ public class PlayerTweaksData implements ProfileChangeListener {
                 mIsOculusQuestFixEnabled, null, mIsExtraLongSpeedListEnabled, mIsQuickSkipVideosEnabled, mIsNetworkErrorFixingDisabled, mIsCommentsPlacedLeft,
                 null, mIsAudioFocusEnabled, mIsDontResizeVideoToFitDialogEnabled, mIsSuggestionsHorizontallyScrolled,
                 mIsQuickSkipShortsAltEnabled, mIsQuickSkipVideosAltEnabled, mIsAudioTimeStretchingEnabled, mIsQueueRespectsPlaybackMode, null,
-                mIsLiveEdgeEnabled
+                mIsLiveEdgeEnabled, mIsQuickSkipChaptersEnabled
                 ));
     }
 
